@@ -8,7 +8,8 @@
 #
 
 add_library(FreeMODBUS-integration STATIC
-		${CMAKE_CURRENT_LIST_DIR}/errorCodeToFreemodbusError.cpp)
+		${CMAKE_CURRENT_LIST_DIR}/errorCodeToFreemodbusError.cpp
+		${CMAKE_CURRENT_LIST_DIR}/freemodbusErrorToErrorCode.cpp)
 target_include_directories(FreeMODBUS-integration PUBLIC
 		${CMAKE_CURRENT_LIST_DIR}/include
 		$<TARGET_PROPERTY:FreeMODBUS,INTERFACE_INCLUDE_DIRECTORIES>)
