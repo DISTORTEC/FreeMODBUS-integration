@@ -45,11 +45,11 @@ constexpr distortos::TickClock::duration maxDuration {std::chrono::milliseconds{
 bool getEventInternal(FreemodbusInstance& instance, eMBEventType& event)
 {
 	// reverse order, as "high" events have higher priority
-	for (auto& checkedEvent : estd::makeReverseAdaptor(instance.events))
+	for (auto& checkedEvent : estd::makeReverseAdaptor(instance.pendingEvents))
 		if (checkedEvent != 0)
 		{
 			--checkedEvent;
-			event = static_cast<eMBEventType>(&checkedEvent - instance.events.begin());
+			event = static_cast<eMBEventType>(&checkedEvent - instance.pendingEvents.begin());
 			return true;
 		}
 
@@ -81,7 +81,7 @@ extern "C" bool xMBPortEventInit(xMBInstance* const instance)
 	assert(instance != nullptr);
 	auto& freemodbusInstance = *reinterpret_cast<FreemodbusInstance*>(instance);
 
-	for (auto& event : freemodbusInstance.events)
+	for (auto& event : freemodbusInstance.pendingEvents)
 		event = {};
 
 	return true;
@@ -92,11 +92,11 @@ extern "C" bool xMBPortEventPost(xMBInstance* const instance, const eMBEventType
 	assert(instance != nullptr);
 	auto& freemodbusInstance = *reinterpret_cast<FreemodbusInstance*>(instance);
 
-	if (freemodbusInstance.events[event] ==
-			std::numeric_limits<std::decay<decltype(freemodbusInstance.events[event])>::type>::max())
+	if (freemodbusInstance.pendingEvents[event] ==
+			std::numeric_limits<std::decay<decltype(freemodbusInstance.pendingEvents[event])>::type>::max())
 		return false;	// overflow
 
-	++(freemodbusInstance.events)[event];
+	++(freemodbusInstance.pendingEvents)[event];
 
 	return true;
 }

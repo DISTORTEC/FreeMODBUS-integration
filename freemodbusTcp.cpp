@@ -64,8 +64,8 @@ void releaseClientSocket(FreemodbusInstance& freemodbusInstance)
 			return;
 	}
 
-	while (lwip_recv(freemodbusInstance.clientSocket, freemodbusInstance.buffer, sizeof(freemodbusInstance.buffer),
-			MSG_DONTWAIT) > 0);
+	while (lwip_recv(freemodbusInstance.clientSocket, freemodbusInstance.frameBuffer,
+			sizeof(freemodbusInstance.frameBuffer), MSG_DONTWAIT) > 0);
 	lwip_close(freemodbusInstance.clientSocket);
 	freemodbusInstance.clientSocket = -1;
 }
@@ -130,16 +130,16 @@ void freemodbusTcpPoll(FreemodbusInstance& instance, const distortos::TickClock:
 		if (instance.clientSocket != -1 && FD_ISSET(instance.clientSocket, &fdSet) != 0)
 		{
 			const uint16_t length = instance.bytesInBuffer < FreemodbusInstance::mbapHeaderSize - 1 ? 0 :
-					((instance.buffer[frameLengthHigh] << 8) | instance.buffer[frameLengthLow]);
+					((instance.frameBuffer[frameLengthHigh] << 8) | instance.frameBuffer[frameLengthLow]);
 			const size_t totalSize = FreemodbusInstance::mbapHeaderSize - 1 + length;
-			if (totalSize > sizeof(instance.buffer))
+			if (totalSize > sizeof(instance.frameBuffer))
 			{
 				instance.bytesInBuffer = 0;
 				releaseClientSocket(instance);
 				continue;
 			}
 
-			const auto ret = lwip_recv(instance.clientSocket, &instance.buffer[instance.bytesInBuffer],
+			const auto ret = lwip_recv(instance.clientSocket, &instance.frameBuffer[instance.bytesInBuffer],
 					totalSize - instance.bytesInBuffer, {});
 			if (ret <= 0)
 			{
@@ -224,7 +224,7 @@ extern "C" bool xMBTCPPortGetRequest(xMBInstance* const instance, uint8_t** cons
 
 	auto& freemodbusInstance = *reinterpret_cast<FreemodbusInstance*>(instance);
 
-	*frame = freemodbusInstance.buffer;
+	*frame = freemodbusInstance.frameBuffer;
 	*length = freemodbusInstance.bytesInBuffer;
 	freemodbusInstance.bytesInBuffer = {};
 	return true;

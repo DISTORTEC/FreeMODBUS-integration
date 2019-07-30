@@ -59,8 +59,8 @@ struct FreemodbusInstance
 					clientSocket{-1},
 					listenSocket{},
 					listenSocketsRangeMutex{listenSocketsRangeMutexx},
-					buffer{},
-					events{}
+					frameBuffer{},
+					pendingEvents{}
 	{
 
 	}
@@ -96,10 +96,10 @@ struct FreemodbusInstance
 	distortos::Mutex* listenSocketsRangeMutex;
 
 	/// buffer for bytes
-	uint8_t buffer[tcpBufferSize];
+	uint8_t frameBuffer[tcpBufferSize];
 
 	/// array with counters of pending events
-	std::array<uint8_t, 4> events;
+	std::array<uint8_t, 4> pendingEvents;
 };
 
 #endif	// FREEMODBUS_INTEGRATION_INCLUDE_FREEMODBUSINSTANCE_HPP_
