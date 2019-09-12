@@ -23,6 +23,13 @@ namespace distortos
 
 class Mutex;
 
+namespace devices
+{
+
+class SerialPort;
+
+}	// namespace devices
+
 }	// namespace distortos
 
 class ListenSocket;
@@ -39,16 +46,29 @@ struct FreemodbusInstance
 	/// type alias for range of listen sockets for Modbus TCP
 	using ListenSocketsRange = estd::ContiguousRange<ListenSocket>;
 
+	/// SerialMode contains possible modes of serial port
+	enum class SerialMode : uint8_t
+	{
+		/// serial port disabled
+		disabled,
+		/// serial port is in receiver mode
+		receiver,
+		/// serial port is in transmiter mode
+		transmiter,
+	};
+
 	/**
 	 * \brief FreemodbusInstance's constructor
 	 *
-	 * \param [in] listenSocketsRangee is a range of listen sockets for Modbus TCP, ignored for Modbus RTU
+	 * \param [in] serialPortt is a pointer to serial port that will be used for communication for Modbus ASCII/RTU,
+	 * ignored for Modbus TCP
+	 * \param [in] listenSocketsRangee is a range of listen sockets for Modbus TCP, ignored for Modbus ASCII/RTU
 	 * \param [in] listenSocketsRangeMutexx is a pointer to mutex used for serialization of access to shared listen
-	 * sockets for Modbus TCP, ignored for Modbus RTU
+	 * sockets for Modbus TCP, ignored for Modbus ASCII/RTU
 	 */
 
-	constexpr FreemodbusInstance(const ListenSocketsRange listenSocketsRangee,
-			distortos::Mutex* const listenSocketsRangeMutexx) :
+	constexpr FreemodbusInstance(distortos::devices::SerialPort* const serialPortt,
+			const ListenSocketsRange listenSocketsRangee, distortos::Mutex* const listenSocketsRangeMutexx) :
 					rawInstance{},
 					listenSocketsRange{listenSocketsRangee},
 					tcpKeepaliveDeadline{},
@@ -59,8 +79,12 @@ struct FreemodbusInstance
 					clientSocket{-1},
 					listenSocket{},
 					listenSocketsRangeMutex{listenSocketsRangeMutexx},
+					serialPort{serialPortt},
+					rxPosition{},
+					txPosition{},
 					frameBuffer{},
-					pendingEvents{}
+					pendingEvents{},
+					serialMode{SerialMode::disabled}
 	{
 
 	}
@@ -95,11 +119,23 @@ struct FreemodbusInstance
 	/// pointer to mutex used for serialization of access to shared listen sockets for Modbus TCP
 	distortos::Mutex* listenSocketsRangeMutex;
 
+	/// pointer to serial port that will be used for communication for Modbus ASCII/RTU
+	distortos::devices::SerialPort* serialPort;
+
+	/// current receiver position
+	size_t rxPosition;
+
+	/// current transmiter position
+	size_t txPosition;
+
 	/// buffer for bytes
 	uint8_t frameBuffer[tcpBufferSize];
 
 	/// array with counters of pending events
 	std::array<uint8_t, 4> pendingEvents;
+
+	/// current mode of serial port
+	SerialMode serialMode;
 };
 
 #endif	// FREEMODBUS_INTEGRATION_INCLUDE_FREEMODBUSINSTANCE_HPP_

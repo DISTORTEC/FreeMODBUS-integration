@@ -10,6 +10,7 @@
  */
 
 #include "FreemodbusInstance.hpp"
+#include "freemodbusSerialPoll.hpp"
 #include "freemodbusTcpPoll.hpp"
 #include "freemodbusTimersPoll.hpp"
 
@@ -70,8 +71,20 @@ extern "C" bool xMBPortEventGet(xMBInstance* const instance, eMBEventType* const
 	if (getEventInternal(freemodbusInstance, *event) == true)
 		return true;
 
-	assert(instance->eMBCurrentMode == MB_TCP);
-	freemodbusTcpPoll(freemodbusInstance, distortos::TickClock::now() + maxDuration);
+	if (instance->eMBCurrentMode == MB_RTU || instance->eMBCurrentMode == MB_ASCII)
+	{
+		const auto deadline = freemodbusTimersPoll(freemodbusInstance, distortos::TickClock::time_point{});
+		if (getEventInternal(freemodbusInstance, *event) == true)
+			return true;
+
+		freemodbusSerialPoll(freemodbusInstance, std::min(deadline, distortos::TickClock::now() + maxDuration));
+		if (getEventInternal(freemodbusInstance, *event) == true)
+			return true;
+
+		freemodbusTimersPoll(freemodbusInstance, distortos::TickClock::time_point{});
+	}
+	else if (instance->eMBCurrentMode == MB_TCP)
+		freemodbusTcpPoll(freemodbusInstance, distortos::TickClock::now() + maxDuration);
 
 	return getEventInternal(freemodbusInstance, *event);
 }
