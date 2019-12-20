@@ -19,7 +19,7 @@ target_include_directories(FreeMODBUS-integration PUBLIC
 		${CMAKE_CURRENT_LIST_DIR}/include
 		$<TARGET_PROPERTY:FreeMODBUS,INTERFACE_INCLUDE_DIRECTORIES>)
 target_link_libraries(FreeMODBUS-integration PUBLIC
-		lwIP::core)
+		lwipcore)
 
 target_link_libraries(FreeMODBUS PUBLIC
 		FreeMODBUS-integration)
