@@ -19,7 +19,12 @@ target_include_directories(FreeMODBUS-integration PUBLIC
 		${CMAKE_CURRENT_LIST_DIR}/include
 		$<TARGET_PROPERTY:FreeMODBUS,INTERFACE_INCLUDE_DIRECTORIES>)
 target_link_libraries(FreeMODBUS-integration PUBLIC
-		lwipcore)
+		distortos::distortos)
+
+if(TARGET lwipcore)
+	target_link_libraries(FreeMODBUS-integration PUBLIC
+			lwipcore)
+endif()
 
 target_link_libraries(FreeMODBUS PUBLIC
 		FreeMODBUS-integration)

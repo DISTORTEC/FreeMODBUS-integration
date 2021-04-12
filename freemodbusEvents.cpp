@@ -83,8 +83,10 @@ extern "C" bool xMBPortEventGet(xMBInstance* const instance, eMBEventType* const
 
 		freemodbusTimersPoll(freemodbusInstance, distortos::TickClock::time_point{});
 	}
+#if MB_TCP_ENABLED == 1
 	else if (instance->eMBCurrentMode == MB_TCP)
 		freemodbusTcpPoll(freemodbusInstance, distortos::TickClock::now() + maxDuration);
+#endif	// MB_TCP_ENABLED == 1
 
 	return getEventInternal(freemodbusInstance, *event);
 }

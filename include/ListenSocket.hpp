@@ -12,6 +12,10 @@
 #ifndef FREEMODBUS_INTEGRATION_INCLUDE_LISTENSOCKET_HPP_
 #define FREEMODBUS_INTEGRATION_INCLUDE_LISTENSOCKET_HPP_
 
+#include "mbconfig.h"
+
+#if MB_TCP_ENABLED == 1
+
 #include <cstddef>
 #include <cstdint>
 
@@ -123,5 +127,7 @@ private:
 	/// current port of listen socket for Modbus TCP
 	uint16_t port_;
 };
+
+#endif	// MB_TCP_ENABLED == 1
 
 #endif	// FREEMODBUS_INTEGRATION_INCLUDE_LISTENSOCKET_HPP_

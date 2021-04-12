@@ -11,6 +11,8 @@
 
 #include "freemodbusTcpPoll.hpp"
 
+#if MB_TCP_ENABLED == 1
+
 #include "FreemodbusInstance.hpp"
 #include "ListenSocket.hpp"
 
@@ -279,3 +281,5 @@ extern "C" bool xMBTCPPortSendResponse(xMBInstance* const instance, const uint8_
 
 	return true;
 }
+
+#endif	// MB_TCP_ENABLED == 1

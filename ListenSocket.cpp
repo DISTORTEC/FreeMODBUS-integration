@@ -11,6 +11,8 @@
 
 #include "ListenSocket.hpp"
 
+#if MB_TCP_ENABLED == 1
+
 #include "lwip/sockets.h"
 
 #include "distortos/assert.h"
@@ -134,3 +136,5 @@ int ListenSocket::openSocket(const uint16_t port)
 	port_ = ntohs(serverAddress.sin_port);
 	return 0;
 }
+
+#endif	// MB_TCP_ENABLED == 1

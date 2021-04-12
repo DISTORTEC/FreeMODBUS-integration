@@ -12,6 +12,10 @@
 #ifndef FREEMODBUS_INTEGRATION_FREEMODBUSTCPPOLL_HPP_
 #define FREEMODBUS_INTEGRATION_FREEMODBUSTCPPOLL_HPP_
 
+#include "mbconfig.h"
+
+#if MB_TCP_ENABLED == 1
+
 #include "distortos/TickClock.hpp"
 
 struct FreemodbusInstance;
@@ -28,5 +32,7 @@ struct FreemodbusInstance;
  */
 
 void freemodbusTcpPoll(FreemodbusInstance& instance, distortos::TickClock::time_point deadline);
+
+#endif	// MB_TCP_ENABLED == 1
 
 #endif	// FREEMODBUS_INTEGRATION_FREEMODBUSTCPPOLL_HPP_

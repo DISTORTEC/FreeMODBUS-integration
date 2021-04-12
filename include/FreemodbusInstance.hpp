@@ -16,12 +16,22 @@
 
 #include "distortos/TickClock.hpp"
 
+#if MB_TCP_ENABLED == 1
+
 #include "estd/ContiguousRange.hpp"
+
+#endif	// MB_TCP_ENABLED == 1
+
+#include <array>
 
 namespace distortos
 {
 
+#if MB_TCP_ENABLED == 1
+
 class Mutex;
+
+#endif	// MB_TCP_ENABLED == 1
 
 namespace devices
 {
@@ -32,19 +42,35 @@ class SerialPort;
 
 }	// namespace distortos
 
+#if MB_TCP_ENABLED == 1
+
 class ListenSocket;
+
+#endif	// MB_TCP_ENABLED == 1
 
 /// FreemodbusInstance struct is an instance of FreeMODBUS
 struct FreemodbusInstance
 {
+#if MB_TCP_ENABLED == 1
+
 	/// size of MBAP header of Modbus TCP
 	constexpr static size_t mbapHeaderSize {7};
 
 	/// size of buffer for complete Modbus TCP frame
 	constexpr static size_t tcpBufferSize {mbapHeaderSize + MB_SER_SIZE_MAX};
 
+	/// size of buffer for complete Modbus frame
+	constexpr static size_t bufferSize {tcpBufferSize};
+
 	/// type alias for range of listen sockets for Modbus TCP
 	using ListenSocketsRange = estd::ContiguousRange<ListenSocket>;
+
+#else
+
+	/// size of buffer for complete Modbus frame
+	constexpr static size_t bufferSize {MB_SER_SIZE_MAX};
+
+#endif	// MB_TCP_ENABLED == 1
 
 	/// SerialMode contains possible modes of serial port
 	enum class SerialMode : uint8_t
@@ -56,6 +82,8 @@ struct FreemodbusInstance
 		/// serial port is in transmiter mode
 		transmiter,
 	};
+
+#if MB_TCP_ENABLED == 1
 
 	/**
 	 * \brief FreemodbusInstance's constructor
@@ -89,8 +117,35 @@ struct FreemodbusInstance
 
 	}
 
+#else	// MB_TCP_ENABLED != 1
+
+	/**
+	 * \brief FreemodbusInstance's constructor
+	 *
+	 * \param [in] serialPortt is a reference to serial port that will be used for communication for Modbus ASCII/RTU
+	 */
+
+	constexpr explicit FreemodbusInstance(distortos::devices::SerialPort& serialPortt) :
+			rawInstance{},
+			timerDeadline{distortos::TickClock::time_point::max()},
+			timerDuration{},
+			bytesInBuffer{},
+			serialPort{&serialPortt},
+			rxPosition{},
+			txPosition{},
+			frameBuffer{},
+			pendingEvents{},
+			serialMode{SerialMode::disabled}
+	{
+
+	}
+
+#endif	// MB_TCP_ENABLED != 1
+
 	/// instance of FreeMODBUS
 	xMBInstance rawInstance;
+
+#if MB_TCP_ENABLED == 1
 
 	/// range of listen sockets for Modbus TCP
 	ListenSocketsRange listenSocketsRange;
@@ -101,6 +156,8 @@ struct FreemodbusInstance
 	/// duration of Modbus TCP keepalive
 	distortos::TickClock::duration tcpKeepaliveDuration;
 
+#endif	// MB_TCP_ENABLED == 1
+
 	/// timer deadline
 	distortos::TickClock::time_point timerDeadline;
 
@@ -110,6 +167,8 @@ struct FreemodbusInstance
 	/// number of bytes stored in buffer
 	size_t bytesInBuffer;
 
+#if MB_TCP_ENABLED == 1
+
 	/// client socket for Modbus TCP, -1 if no client is connected
 	int clientSocket;
 
@@ -118,6 +177,8 @@ struct FreemodbusInstance
 
 	/// pointer to mutex used for serialization of access to shared listen sockets for Modbus TCP
 	distortos::Mutex* listenSocketsRangeMutex;
+
+#endif	// MB_TCP_ENABLED == 1
 
 	/// pointer to serial port that will be used for communication for Modbus ASCII/RTU
 	distortos::devices::SerialPort* serialPort;
@@ -129,7 +190,7 @@ struct FreemodbusInstance
 	size_t txPosition;
 
 	/// buffer for bytes
-	uint8_t frameBuffer[tcpBufferSize];
+	uint8_t frameBuffer[bufferSize];
 
 	/// array with counters of pending events
 	std::array<uint8_t, 4> pendingEvents;
