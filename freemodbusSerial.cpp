@@ -31,7 +31,7 @@ void freemodbusSerialPoll(FreemodbusInstance& instance, const distortos::TickClo
 	{
 		const auto ret = instance.serialPort->tryReadUntil(deadline, instance.frameBuffer,
 				sizeof(instance.frameBuffer));
-		if (ret.first != 0 || ret.second == 0)
+		if (ret.second == 0)
 			return;
 
 		instance.bytesInBuffer = ret.second;
