@@ -3,6 +3,7 @@
  * \brief freemodbusTimersPoll() declaration
  *
  * \author Copyright (C) 2019 Aleksander Szczygiel https://distortec.com https://freddiechopin.info
+ * \author Copyright (C) 2021 Kamil Szczygiel https://distortec.com https://freddiechopin.info
  *
  * \par License
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
@@ -21,15 +22,13 @@ struct FreemodbusInstance;
 +---------------------------------------------------------------------------------------------------------------------*/
 
 /**
- * \brief Polls the timer until either timer's deadline or \a deadline, whichever comes first.
+ * \brief Polls the timer to check whether it expired.
  *
  * \param [in] instance is a reference to instance of FreeMODBUS
- * \param [in] deadline is the deadline of polling operation
  *
- * \return next deadline of timer, distortos::TickClock::time_point::max() if timer is not enabled.
+ * \return next deadline of timer, distortos::TickClock::time_point::max() if timer is not enabled
  */
 
-distortos::TickClock::time_point freemodbusTimersPoll(FreemodbusInstance& instance,
-		distortos::TickClock::time_point deadline);
+distortos::TickClock::time_point freemodbusTimersPoll(FreemodbusInstance& instance);
 
 #endif	// FREEMODBUS_INTEGRATION_FREEMODBUSTIMERSPOLL_HPP_

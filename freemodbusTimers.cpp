@@ -23,14 +23,12 @@
 | global functions
 +---------------------------------------------------------------------------------------------------------------------*/
 
-distortos::TickClock::time_point freemodbusTimersPoll(FreemodbusInstance& instance,
-		const distortos::TickClock::time_point deadline)
+distortos::TickClock::time_point freemodbusTimersPoll(FreemodbusInstance& instance)
 {
-	distortos::ThisThread::sleepUntil(std::min(deadline, instance.timerDeadline));
-
-	if (distortos::TickClock::now() >= instance.timerDeadline)
+	if (instance.timerDeadline != decltype(instance.timerDeadline)::max() &&
+			distortos::TickClock::now() >= instance.timerDeadline)
 	{
-		instance.timerDeadline = distortos::TickClock::time_point::max();
+		instance.timerDeadline = decltype(instance.timerDeadline)::max();
 		instance.rawInstance.pxMBPortCBTimerExpired(&instance.rawInstance);
 	}
 

@@ -2,7 +2,7 @@
  * \file
  * \brief Definitions of events-related functions for FreeMODBUS
  *
- * \author Copyright (C) 2019 Kamil Szczygiel https://distortec.com https://freddiechopin.info
+ * \author Copyright (C) 2019-2021 Kamil Szczygiel https://distortec.com https://freddiechopin.info
  *
  * \par License
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
@@ -73,7 +73,7 @@ extern "C" bool xMBPortEventGet(xMBInstance* const instance, eMBEventType* const
 
 	if (instance->eMBCurrentMode == MB_RTU || instance->eMBCurrentMode == MB_ASCII)
 	{
-		const auto deadline = freemodbusTimersPoll(freemodbusInstance, distortos::TickClock::time_point{});
+		const auto deadline = freemodbusTimersPoll(freemodbusInstance);
 		if (getEventInternal(freemodbusInstance, *event) == true)
 			return true;
 
@@ -81,7 +81,7 @@ extern "C" bool xMBPortEventGet(xMBInstance* const instance, eMBEventType* const
 		if (getEventInternal(freemodbusInstance, *event) == true)
 			return true;
 
-		freemodbusTimersPoll(freemodbusInstance, distortos::TickClock::time_point{});
+		freemodbusTimersPoll(freemodbusInstance);
 	}
 #if MB_TCP_ENABLED == 1
 	else if (instance->eMBCurrentMode == MB_TCP)
