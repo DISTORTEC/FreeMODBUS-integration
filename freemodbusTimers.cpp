@@ -47,7 +47,7 @@ extern "C" void vMBPortTimersDisable(xMBInstance* const instance)
 	assert(instance != nullptr);
 	auto& freemodbusInstance = *reinterpret_cast<FreemodbusInstance*>(instance);
 
-	freemodbusInstance.timerDeadline = distortos::TickClock::time_point::max();
+	freemodbusInstance.timerDeadline = decltype(freemodbusInstance.timerDeadline)::max();
 }
 
 extern "C" void vMBPortTimersEnable(xMBInstance* const instance)
