@@ -3,6 +3,7 @@
  * \brief Definitions of timers-related functions for FreeMODBUS
  *
  * \author Copyright (C) 2019 Aleksander Szczygiel https://distortec.com https://freddiechopin.info
+ * \author Copyright (C) 2021 Kamil Szczygiel https://distortec.com https://freddiechopin.info
  *
  * \par License
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
@@ -65,13 +66,14 @@ extern "C" void xMBPortTimersClose(xMBInstance*)
 extern "C" bool xMBPortTimersInit(xMBInstance* const instance, const uint16_t timeout50us)
 {
 	assert(instance != nullptr);
+	assert(timeout50us != 0);
 	auto& freemodbusInstance = *reinterpret_cast<FreemodbusInstance*>(instance);
 
-	const auto duration =
-			std::chrono::duration_cast<distortos::TickClock::duration>(std::chrono::microseconds{timeout50us * 50});
-	freemodbusInstance.timerDuration = duration > distortos::TickClock::duration{} ? duration :
-			distortos::TickClock::duration{1};
+	const auto duration = std::chrono::microseconds{timeout50us * 50};
+	freemodbusInstance.timerDuration = std::chrono::duration_cast<decltype(freemodbusInstance.timerDuration)>(duration);
+	if (freemodbusInstance.timerDuration < duration)
+		++freemodbusInstance.timerDuration;
 
-	freemodbusInstance.timerDeadline = distortos::TickClock::time_point::max();
+	freemodbusInstance.timerDeadline = decltype(freemodbusInstance.timerDeadline)::max();
 	return true;
 }
