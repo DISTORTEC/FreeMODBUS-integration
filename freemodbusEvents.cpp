@@ -24,13 +24,6 @@ namespace
 {
 
 /*---------------------------------------------------------------------------------------------------------------------+
-| local objects
-+---------------------------------------------------------------------------------------------------------------------*/
-
-/// max duration of "push" and "pop" operations
-constexpr distortos::TickClock::duration maxDuration {std::chrono::milliseconds{100}};
-
-/*---------------------------------------------------------------------------------------------------------------------+
 | local functions
 +---------------------------------------------------------------------------------------------------------------------*/
 
@@ -77,7 +70,9 @@ extern "C" bool xMBPortEventGet(xMBInstance* const instance, eMBEventType* const
 		if (getEventInternal(freemodbusInstance, *event) == true)
 			return true;
 
-		freemodbusSerialPoll(freemodbusInstance, std::min(deadline, distortos::TickClock::now() + maxDuration));
+		assert(freemodbusInstance.timerDuration != decltype(freemodbusInstance.timerDuration)::zero());
+		freemodbusSerialPoll(freemodbusInstance,
+				std::min(deadline, distortos::TickClock::now() + freemodbusInstance.timerDuration));
 		if (getEventInternal(freemodbusInstance, *event) == true)
 			return true;
 
@@ -85,7 +80,7 @@ extern "C" bool xMBPortEventGet(xMBInstance* const instance, eMBEventType* const
 	}
 #if MB_TCP_ENABLED == 1
 	else if (instance->eMBCurrentMode == MB_TCP)
-		freemodbusTcpPoll(freemodbusInstance, distortos::TickClock::now() + maxDuration);
+		freemodbusTcpPoll(freemodbusInstance, distortos::TickClock::now() + std::chrono::milliseconds{100});
 #endif	// MB_TCP_ENABLED == 1
 
 	return getEventInternal(freemodbusInstance, *event);
