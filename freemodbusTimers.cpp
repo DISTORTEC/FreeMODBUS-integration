@@ -2,7 +2,7 @@
  * \file
  * \brief Definitions of timers-related functions for FreeMODBUS
  *
- * \author Copyright (C) 2019 Aleksander Szczygiel https://distortec.com http://www.freddiechopin.info
+ * \author Copyright (C) 2019 Aleksander Szczygiel https://distortec.com https://freddiechopin.info
  *
  * \par License
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
