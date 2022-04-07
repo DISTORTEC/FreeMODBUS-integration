@@ -3,7 +3,7 @@
  * \brief Definitions of timers-related functions for FreeMODBUS
  *
  * \author Copyright (C) 2019 Aleksander Szczygiel https://distortec.com https://freddiechopin.info
- * \author Copyright (C) 2021 Kamil Szczygiel https://distortec.com https://freddiechopin.info
+ * \author Copyright (C) 2021-2022 Kamil Szczygiel https://distortec.com https://freddiechopin.info
  *
  * \par License
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not
@@ -16,8 +16,9 @@
 
 #include "mbport.h"
 
-#include "distortos/assert.h"
 #include "distortos/ThisThread.hpp"
+
+#include <cassert>
 
 /*---------------------------------------------------------------------------------------------------------------------+
 | global functions
